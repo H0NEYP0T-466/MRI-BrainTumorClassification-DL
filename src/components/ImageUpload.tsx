@@ -17,6 +17,23 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUpload, isLoading }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const handleFile = useCallback((file: File) => {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please upload an image file (PNG, JPG, JPEG)');
+      return;
+    }
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    setSelectedFile(file);
+  }, []);
+
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -43,31 +60,14 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUpload, isLoading }) => {
     if (files && files.length > 0) {
       handleFile(files[0]);
     }
-  }, []);
+  }, [handleFile]);
 
   const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
       handleFile(files[0]);
     }
-  }, []);
-
-  const handleFile = (file: File) => {
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      alert('Please upload an image file (PNG, JPG, JPEG)');
-      return;
-    }
-
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-
-    setSelectedFile(file);
-  };
+  }, [handleFile]);
 
   const handleUploadClick = () => {
     if (selectedFile) {
