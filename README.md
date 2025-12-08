@@ -135,8 +135,43 @@ Supported formats: PNG, JPG, JPEG
 
 ### Training the Model
 
-1. Ensure dataset is in place
-2. Call the training endpoint:
+#### Option 1: Standalone Training Script (Recommended)
+
+The easiest way to train the model is using the standalone training script with comprehensive logging:
+
+```bash
+cd backend
+python train.py
+```
+
+This will:
+- ✅ Check dataset availability
+- 🔄 Preprocess images automatically
+- 📊 Show detailed dataset statistics
+- 🧠 Display model architecture
+- 📈 Train with verbose logging (epochs, batches, loss, accuracy)
+- 💾 Save the best model automatically
+
+**Custom parameters:**
+```bash
+# Train for more epochs
+python train.py --epochs 20
+
+# Use smaller batch size
+python train.py --batch-size 16
+
+# Adjust learning rate
+python train.py --lr 0.00005
+
+# View all options
+python train.py --help
+```
+
+See [backend/TRAINING_GUIDE.md](backend/TRAINING_GUIDE.md) for detailed documentation.
+
+#### Option 2: API Endpoint
+
+Alternatively, you can train via the API endpoint:
 
 ```bash
 curl -X POST "http://localhost:8000/train" \
