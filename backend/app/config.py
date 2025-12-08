@@ -43,7 +43,7 @@ LEARNING_RATE = 1e-4
 WEIGHT_DECAY = 1e-5
 
 # Model name (timm)
-MODEL_NAME = "vit_base_patch16_224"  # Latest ViT architecture
+MODEL_NAME = "vit_base_patch16_224"  # Vision Transformer Base model with 16x16 patches, 224x224 input
 
 # Create necessary directories
 MODEL_DIR.mkdir(parents=True, exist_ok=True)

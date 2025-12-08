@@ -125,7 +125,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUpload, isLoading }) => {
             <p className="dropzone-text">
               <span className="highlight">Click to upload</span> or drag and drop
             </p>
-            <p className="dropzone-hint">PNG, JPG or JPEG (MAX. 10MB)</p>
+            <p className="dropzone-hint">PNG, JPG or JPEG</p>
           </div>
         </div>
       ) : (

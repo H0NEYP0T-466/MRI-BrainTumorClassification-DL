@@ -6,6 +6,10 @@
 import React from 'react';
 import './ResultPanel.css';
 
+// Confidence thresholds for classification quality indicators
+const CONFIDENCE_HIGH = 0.9;
+const CONFIDENCE_MODERATE = 0.7;
+
 interface ResultPanelProps {
   className: string;
   confidence: number;
@@ -45,9 +49,9 @@ const ResultPanel: React.FC<ResultPanelProps> = ({ className, confidence }) => {
         
         <div className="result-note">
           <p>
-            {confidence >= 0.9 && '🔴 High confidence detection'}
-            {confidence >= 0.7 && confidence < 0.9 && '🟡 Moderate confidence'}
-            {confidence < 0.7 && '⚠️ Low confidence - consider retesting'}
+            {confidence >= CONFIDENCE_HIGH && '🔴 High confidence detection'}
+            {confidence >= CONFIDENCE_MODERATE && confidence < CONFIDENCE_HIGH && '🟡 Moderate confidence'}
+            {confidence < CONFIDENCE_MODERATE && '⚠️ Low confidence - consider retesting'}
           </p>
         </div>
       </div>

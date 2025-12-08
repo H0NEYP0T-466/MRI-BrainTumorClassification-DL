@@ -2,7 +2,7 @@
 import numpy as np
 import cv2
 from pathlib import Path
-from typing import Union
+from typing import Union, Tuple
 
 from app.logging_config import logger
 
@@ -125,7 +125,3 @@ def segment_and_save(
     logger.info(f"Segmented image saved to: {output_path}")
     
     return segmented_image
-
-
-# Import Tuple for type hints
-from typing import Tuple
