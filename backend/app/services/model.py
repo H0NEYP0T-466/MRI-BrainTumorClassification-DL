@@ -23,12 +23,25 @@ class BrainTumorClassifier(nn.Module):
         logger.info(f"Initializing model: {model_name}")
         logger.info(f"Number of classes: {num_classes}")
         
-        # Load pretrained ViT from timm
-        self.model = timm.create_model(
-            model_name,
-            pretrained=True,
-            num_classes=num_classes
-        )
+        # Try to load pretrained ViT from timm with fallback
+        try:
+            logger.info("Attempting to load pretrained weights from HuggingFace Hub...")
+            self.model = timm.create_model(
+                model_name,
+                pretrained=True,
+                num_classes=num_classes
+            )
+            logger.info("✓ Pretrained weights loaded successfully")
+        except Exception as e:
+            logger.warning(f"Failed to download pretrained weights: {e}")
+            logger.warning("Falling back to random initialization (no pretrained weights)")
+            logger.info("Note: Training from scratch may require more epochs for convergence")
+            self.model = timm.create_model(
+                model_name,
+                pretrained=False,
+                num_classes=num_classes
+            )
+            logger.info("✓ Model initialized with random weights")
         
         logger.info("Model initialized successfully")
         logger.info(f"Model parameters: {sum(p.numel() for p in self.parameters()):,}")
