@@ -4,6 +4,7 @@ import torch.nn as nn
 import timm
 from pathlib import Path
 from typing import Optional
+from huggingface_hub.errors import HfHubHTTPError, LocalEntryNotFoundError
 
 from app.logging_config import logger
 from app.config import MODEL_NAME, NUM_CLASSES, DEVICE, MODEL_PATH
@@ -32,7 +33,12 @@ class BrainTumorClassifier(nn.Module):
                 num_classes=num_classes
             )
             logger.info("✓ Pretrained weights loaded successfully")
-        except Exception as e:
+        except (HfHubHTTPError, LocalEntryNotFoundError, OSError, ConnectionError, RuntimeError) as e:
+            # HfHubHTTPError: HTTP errors from HuggingFace Hub (403, 404, etc.)
+            # LocalEntryNotFoundError: Model not found in local cache
+            # OSError: Network/file system errors
+            # ConnectionError: Network connection issues
+            # RuntimeError: Client closed or other runtime errors
             logger.warning(f"Failed to download pretrained weights: {e}")
             logger.warning("Falling back to random initialization (no pretrained weights)")
             logger.info("Note: Training from scratch may require more epochs for convergence")
