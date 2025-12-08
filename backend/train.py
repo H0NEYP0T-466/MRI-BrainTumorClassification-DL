@@ -148,12 +148,28 @@ def load_datasets(batch_size: int):
         print("   Please ensure your dataset is properly set up.")
         sys.exit(1)
     
-    # Calculate class distribution
+    if len(test_dataset) == 0:
+        print("\n❌ ERROR: Testing dataset is empty!")
+        print("   Please ensure your dataset is properly set up.")
+        sys.exit(1)
+    
+    # Calculate class distribution efficiently in one pass
     print("\n📊 Dataset Distribution:")
-    train_no_tumor = len([x for x in train_dataset.data if x[1] == 0])
-    train_tumor = len([x for x in train_dataset.data if x[1] == 1])
-    test_no_tumor = len([x for x in test_dataset.data if x[1] == 0])
-    test_tumor = len([x for x in test_dataset.data if x[1] == 1])
+    train_no_tumor = 0
+    train_tumor = 0
+    for _, label in train_dataset.data:
+        if label == 0:
+            train_no_tumor += 1
+        else:
+            train_tumor += 1
+    
+    test_no_tumor = 0
+    test_tumor = 0
+    for _, label in test_dataset.data:
+        if label == 0:
+            test_no_tumor += 1
+        else:
+            test_tumor += 1
     
     print(f"  Training:")
     print(f"    No Tumor: {train_no_tumor:5} ({100 * train_no_tumor / len(train_dataset):5.1f}%)")
@@ -417,26 +433,28 @@ def train_model(epochs: int, batch_size: int, learning_rate: float):
     print(f"  Total training time:        {total_time / 60:.2f} minutes")
     print(f"  Average time per epoch:     {total_time / epochs:.1f} seconds")
     print(f"  Best validation accuracy:   {best_val_acc:.2f}% (Epoch {best_epoch})")
-    print(f"  Final training accuracy:    {training_history[-1]['train_acc']:.2f}%")
-    print(f"  Final validation accuracy:  {training_history[-1]['val_acc']:.2f}%")
+    if training_history:
+        print(f"  Final training accuracy:    {training_history[-1]['train_acc']:.2f}%")
+        print(f"  Final validation accuracy:  {training_history[-1]['val_acc']:.2f}%")
     print(f"  Model saved to:             {MODEL_PATH}")
     
     # Print training history table
-    print(f"\n{'=' * 80}")
-    print("  TRAINING HISTORY")
-    print(f"{'=' * 80}")
-    print(f"{'Epoch':>6} {'Train Loss':>12} {'Train Acc':>11} {'Val Loss':>10} {'Val Acc':>9} {'LR':>12}")
-    print("-" * 80)
-    for entry in training_history:
-        print(
-            f"{entry['epoch']:>6} "
-            f"{entry['train_loss']:>12.4f} "
-            f"{entry['train_acc']:>10.2f}% "
-            f"{entry['val_loss']:>10.4f} "
-            f"{entry['val_acc']:>8.2f}% "
-            f"{entry['lr']:>12.6f}"
-        )
-    print("=" * 80)
+    if training_history:
+        print(f"\n{'=' * 80}")
+        print("  TRAINING HISTORY")
+        print(f"{'=' * 80}")
+        print(f"{'Epoch':>6} {'Train Loss':>12} {'Train Acc':>11} {'Val Loss':>10} {'Val Acc':>9} {'LR':>12}")
+        print("-" * 80)
+        for entry in training_history:
+            print(
+                f"{entry['epoch']:>6} "
+                f"{entry['train_loss']:>12.4f} "
+                f"{entry['train_acc']:>10.2f}% "
+                f"{entry['val_loss']:>10.4f} "
+                f"{entry['val_acc']:>8.2f}% "
+                f"{entry['lr']:>12.6f}"
+            )
+        print("=" * 80)
     
     print(f"\n✨ Training completed successfully!")
     print(f"   You can now use the model for inference.")
