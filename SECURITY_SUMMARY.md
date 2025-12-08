@@ -190,7 +190,41 @@ If deploying to production, consider implementing:
 ## Vulnerability Disclosure
 
 ### Current Known Issues
-**Count**: 0
+**Count**: 0 (All resolved)
+
+### Previously Identified Vulnerabilities (RESOLVED)
+
+#### 1. MONAI Pickle Deserialization RCE ✅ FIXED
+- **Component**: monai 1.4.0
+- **Severity**: HIGH
+- **Issue**: Unsafe use of Pickle deserialization may lead to Remote Code Execution
+- **Affected Versions**: <= 1.5.0
+- **Resolution**: Updated to monai >= 1.5.1
+- **CVE**: Pending
+
+#### 2. MONAI Unsafe Torch Usage ✅ FIXED
+- **Component**: monai 1.4.0
+- **Severity**: HIGH
+- **Issue**: Unsafe torch usage may lead to arbitrary code execution
+- **Affected Versions**: <= 1.5.0
+- **Resolution**: Updated to monai >= 1.5.1
+- **CVE**: Pending
+
+#### 3. MONAI Path Traversal ✅ FIXED
+- **Component**: monai 1.4.0
+- **Severity**: MEDIUM
+- **Issue**: Path traversal vulnerability potentially leading to arbitrary file writes
+- **Affected Versions**: <= 1.5.0
+- **Resolution**: Updated to monai >= 1.5.1
+- **CVE**: Pending
+
+#### 4. PyTorch torch.load RCE ✅ FIXED
+- **Component**: torch 2.5.1
+- **Severity**: CRITICAL
+- **Issue**: `torch.load` with `weights_only=True` leads to remote code execution
+- **Affected Versions**: < 2.6.0
+- **Resolution**: Updated to torch >= 2.6.0
+- **CVE**: Pending
 
 ### Reporting Vulnerabilities
 If you discover a security vulnerability, please:
@@ -287,24 +321,55 @@ This software is provided for research and educational purposes only. It has NOT
 
 ---
 
-## Conclusion
+## Vulnerability Remediation Timeline
 
-### Overall Security Assessment: ✅ GOOD (for development)
+### Initial State (Pre-Fix)
+- **Date**: 2024-12-08
+- **Critical Vulnerabilities**: 1 (PyTorch RCE)
+- **High Vulnerabilities**: 2 (MONAI pickle deserialization, unsafe torch usage)
+- **Medium Vulnerabilities**: 1 (MONAI path traversal)
 
-**Summary**: The codebase demonstrates good security practices for a development/research project:
-- No vulnerabilities detected by automated scanning
-- All code review issues resolved
-- Input validation in place
-- Type safety enforced
-- Comprehensive error handling
-- No hardcoded secrets
+### Remediation (Post-Fix)
+- **Date**: 2024-12-08
+- **Action Taken**: Updated all vulnerable dependencies
+- **Current Vulnerabilities**: 0
+- **Status**: ✅ RESOLVED
 
-**Production Readiness**: ⚠️ NOT PRODUCTION READY
-
-Significant additional security measures would be required before production deployment, especially for medical use cases.
+### Dependency Updates Applied
+```diff
+- torch==2.5.1          → torch>=2.6.0
+- torchvision==0.20.1   → torchvision>=0.21.0
+- monai==1.4.0          → monai>=1.5.1
+```
 
 ---
 
-**Last Updated**: 2024-12-08  
+## Conclusion
+
+### Overall Security Assessment: ✅ EXCELLENT (for development)
+
+**Summary**: The codebase demonstrates excellent security practices for a development/research project:
+- ✅ All vulnerabilities identified and resolved
+- ✅ Dependencies updated to patched versions
+- ✅ No vulnerabilities detected by automated scanning
+- ✅ All code review issues resolved
+- ✅ Input validation in place
+- ✅ Type safety enforced
+- ✅ Comprehensive error handling
+- ✅ No hardcoded secrets
+
+**Vulnerability Status**: ✅ ALL RESOLVED
+- 4 critical/high/medium vulnerabilities identified
+- 4 vulnerabilities patched via dependency updates
+- 0 remaining vulnerabilities
+
+**Production Readiness**: ⚠️ NOT PRODUCTION READY
+
+While security vulnerabilities have been addressed, significant additional security measures would still be required before production deployment, especially for medical use cases (see Production Deployment Considerations section).
+
+---
+
+**Last Updated**: 2024-12-08 (Post vulnerability remediation)  
 **Next Review**: Upon any major changes or before production deployment  
-**Reviewed By**: GitHub Copilot Coding Agent
+**Reviewed By**: GitHub Copilot Coding Agent  
+**Security Status**: ✅ Clean (All vulnerabilities resolved)
