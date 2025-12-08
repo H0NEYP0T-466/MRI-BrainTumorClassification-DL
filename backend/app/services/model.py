@@ -33,12 +33,9 @@ class BrainTumorClassifier(nn.Module):
                 num_classes=num_classes
             )
             logger.info("✓ Pretrained weights loaded successfully")
-        except (HfHubHTTPError, LocalEntryNotFoundError, OSError, ConnectionError, RuntimeError) as e:
-            # HfHubHTTPError: HTTP errors from HuggingFace Hub (403, 404, etc.)
-            # LocalEntryNotFoundError: Model not found in local cache
-            # OSError: Network/file system errors
-            # ConnectionError: Network connection issues
-            # RuntimeError: Client closed or other runtime errors
+        except (HfHubHTTPError, LocalEntryNotFoundError) as e:
+            # HfHubHTTPError: HTTP errors from HuggingFace Hub (403, 404, 5xx, etc.)
+            # LocalEntryNotFoundError: Model not found in local cache and cannot be downloaded
             logger.warning(f"Failed to download pretrained weights: {e}")
             logger.warning("Falling back to random initialization (no pretrained weights)")
             logger.info("Note: Training from scratch may require more epochs for convergence")
@@ -48,6 +45,23 @@ class BrainTumorClassifier(nn.Module):
                 num_classes=num_classes
             )
             logger.info("✓ Model initialized with random weights")
+        except (OSError, RuntimeError) as e:
+            # OSError: Network/file system errors during download
+            # RuntimeError: HTTP client errors (e.g., "Cannot send a request, as the client has been closed")
+            # These can occur when network is unavailable or blocked
+            if "client has been closed" in str(e) or "address" in str(e).lower():
+                logger.warning(f"Network error while downloading pretrained weights: {e}")
+                logger.warning("Falling back to random initialization (no pretrained weights)")
+                logger.info("Note: Training from scratch may require more epochs for convergence")
+                self.model = timm.create_model(
+                    model_name,
+                    pretrained=False,
+                    num_classes=num_classes
+                )
+                logger.info("✓ Model initialized with random weights")
+            else:
+                # Re-raise if it's not a network-related error
+                raise
         
         logger.info("Model initialized successfully")
         logger.info(f"Model parameters: {sum(p.numel() for p in self.parameters()):,}")
