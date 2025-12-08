@@ -10,6 +10,18 @@ from app.logging_config import logger
 from app.config import MODEL_NAME, NUM_CLASSES, DEVICE, MODEL_PATH
 
 
+# Network error indicators for detecting download failures
+NETWORK_ERROR_KEYWORDS = {
+    "cannot send a request",  # httpx client closed
+    "client has been closed",  # httpx client state
+    "no address associated with hostname",  # DNS resolution failure
+    "connection refused",  # Network connection failure
+    "connection reset",  # Network connection reset
+    "network is unreachable",  # Network routing issue
+    "failed to resolve",  # DNS resolution failure
+}
+
+
 class BrainTumorClassifier(nn.Module):
     """
     Vision Transformer-based classifier for brain tumor detection.
@@ -60,8 +72,9 @@ class BrainTumorClassifier(nn.Module):
             # RuntimeError: HTTP client errors (e.g., "Cannot send a request, as the client has been closed")
             # Check if this is a network-related error that should trigger fallback
             error_msg = str(e).lower()
-            network_error_indicators = ["client", "closed", "address", "connection", "network", "resolve"]
-            if any(indicator in error_msg for indicator in network_error_indicators):
+            is_network_error = any(keyword in error_msg for keyword in NETWORK_ERROR_KEYWORDS)
+            
+            if is_network_error:
                 logger.warning(f"Network error while downloading pretrained weights: {e}")
                 return self._create_model_without_pretrained(model_name, num_classes)
             else:
