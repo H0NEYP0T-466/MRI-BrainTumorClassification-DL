@@ -1,0 +1,134 @@
+/* Result Panel Styles */
+.result-panel {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.result-header {
+  padding: var(--spacing-lg);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.result-header.tumor {
+  background: linear-gradient(135deg, rgba(255, 107, 107, 0.15) 0%, rgba(255, 107, 107, 0.05) 100%);
+  border-bottom-color: var(--accent-danger);
+}
+
+.result-header.no-tumor {
+  background: linear-gradient(135deg, rgba(0, 230, 118, 0.15) 0%, rgba(0, 230, 118, 0.05) 100%);
+  border-bottom-color: var(--accent-success);
+}
+
+.result-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.result-content {
+  padding: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.result-class,
+.result-confidence {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.result-label {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.result-value {
+  font-size: 2rem;
+  font-weight: 700;
+  padding: var(--spacing-sm) 0;
+}
+
+.result-value.tumor {
+  color: var(--accent-danger);
+  text-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+}
+
+.result-value.no-tumor {
+  color: var(--accent-success);
+  text-shadow: 0 0 10px rgba(0, 230, 118, 0.3);
+}
+
+.confidence-container {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
+
+.confidence-bar-bg {
+  flex: 1;
+  height: 32px;
+  background-color: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--border-color-light);
+}
+
+.confidence-bar {
+  height: 100%;
+  transition: width 0.6s ease-out;
+  position: relative;
+}
+
+.confidence-bar.tumor {
+  background: linear-gradient(90deg, var(--accent-danger) 0%, #ff8787 100%);
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+.confidence-bar.no-tumor {
+  background: linear-gradient(90deg, var(--accent-success) 0%, #4ade80 100%);
+  box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+}
+
+.confidence-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 80px;
+  text-align: right;
+}
+
+.result-note {
+  background-color: var(--bg-tertiary);
+  border: 1px solid var(--border-color-light);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  margin-top: var(--spacing-sm);
+}
+
+.result-note p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  text-align: center;
+}
