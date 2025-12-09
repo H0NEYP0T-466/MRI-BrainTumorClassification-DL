@@ -26,6 +26,12 @@ interface PreprocessingStepsProps {
 }
 
 const PreprocessingSteps: React.FC<PreprocessingStepsProps> = ({ steps }) => {
+  const [imageErrors, setImageErrors] = React.useState<Set<number>>(new Set());
+
+  const handleImageError = (index: number) => {
+    setImageErrors(prev => new Set(prev).add(index));
+  };
+
   const preprocessingSteps: PreprocessingStep[] = [
     {
       label: 'Original Image',
@@ -85,11 +91,18 @@ const PreprocessingSteps: React.FC<PreprocessingStepsProps> = ({ steps }) => {
             </div>
             
             <div className="preprocessing-card-image">
-              <img 
-                src={step.image} 
-                alt={step.label}
-                className="step-image"
-              />
+              {imageErrors.has(index) ? (
+                <div className="image-error">
+                  <p>Failed to load image</p>
+                </div>
+              ) : (
+                <img 
+                  src={step.image} 
+                  alt={step.label}
+                  className="step-image"
+                  onError={() => handleImageError(index)}
+                />
+              )}
             </div>
             
             <div className="preprocessing-card-footer">

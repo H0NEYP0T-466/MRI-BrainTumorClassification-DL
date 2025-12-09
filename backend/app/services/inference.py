@@ -10,8 +10,11 @@ import base64
 import cv2
 
 from app.logging_config import logger
-from app.config import DEVICE, CLASS_NAMES
-from app.services.preprocessing import preprocess_image
+from app.config import DEVICE, CLASS_NAMES, IMAGE_SIZE
+from app.services.preprocessing import (
+    preprocess_image, denoise_image, apply_clahe, 
+    sharpen_image, enhance_edges, normalize_intensity
+)
 from app.services.segmentation import segment_brain
 from app.services.dataset import get_test_transforms
 
@@ -21,14 +24,18 @@ def numpy_to_base64(image: np.ndarray) -> str:
     Convert numpy array image to base64 string.
     
     Args:
-        image: Numpy array (grayscale uint8)
+        image: Numpy array (grayscale uint8 or float)
         
     Returns:
         Base64 encoded string with data URI prefix
     """
-    # Ensure image is uint8
+    # Ensure image is uint8, normalize if needed
     if image.dtype != np.uint8:
-        image = image.astype(np.uint8)
+        # If image is in [0, 1] range, scale to [0, 255]
+        if image.max() <= 1.0:
+            image = (image * 255).astype(np.uint8)
+        else:
+            image = image.astype(np.uint8)
     
     # Convert to PIL Image
     pil_image = Image.fromarray(image)
@@ -95,11 +102,6 @@ def predict_image(
     original_image = image_np.copy()
     
     # Preprocess
-    from app.services.preprocessing import (
-        denoise_image, apply_clahe, sharpen_image,
-        enhance_edges, normalize_intensity
-    )
-    
     denoised = denoise_image(image_np)
     enhanced = apply_clahe(denoised)
     sharpened = sharpen_image(enhanced)
@@ -119,7 +121,6 @@ def predict_image(
     image_tensor = image_tensor.to(DEVICE)
     
     # Create final image for visualization (resize to model input size)
-    from app.config import IMAGE_SIZE
     final_image = cv2.resize(segmented, (IMAGE_SIZE, IMAGE_SIZE), interpolation=cv2.INTER_LINEAR)
     
     # Step 5: Run inference
