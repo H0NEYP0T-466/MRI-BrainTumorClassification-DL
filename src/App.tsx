@@ -128,7 +128,7 @@ function App() {
         {/* Footer */}
         <footer className={styles.footer}>
           <p>
-            MRI Brain Tumor Classification System © 2024 | 
+            MRI Brain Tumor Classification System © 2025 | 
             Powered by Vision Transformer (ViT) Deep Learning Architecture
           </p>
         </footer>

@@ -117,18 +117,3 @@
   min-width: 80px;
   text-align: right;
 }
-
-.result-note {
-  background-color: var(--bg-tertiary);
-  border: 1px solid var(--border-color-light);
-  border-radius: var(--radius-md);
-  padding: var(--spacing-md);
-  margin-top: var(--spacing-sm);
-}
-
-.result-note p {
-  margin: 0;
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-  text-align: center;
-}

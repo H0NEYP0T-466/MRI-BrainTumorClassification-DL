@@ -1,15 +1,5 @@
-/**
- * Result Panel Component
- * Displays prediction results with class and confidence score
- */
-
 import React from 'react';
 import './ResultPanel.css';
-
-// Confidence thresholds for classification quality indicators
-const CONFIDENCE_HIGH = 0.9;
-const CONFIDENCE_MODERATE = 0.7;
-
 interface ResultPanelProps {
   className: string;
   confidence: number;
@@ -47,13 +37,6 @@ const ResultPanel: React.FC<ResultPanelProps> = ({ className, confidence }) => {
           </div>
         </div>
         
-        <div className="result-note">
-          <p>
-            {confidence >= CONFIDENCE_HIGH && '🔴 High confidence detection'}
-            {confidence >= CONFIDENCE_MODERATE && confidence < CONFIDENCE_HIGH && '🟡 Moderate confidence'}
-            {confidence < CONFIDENCE_MODERATE && '⚠️ Low confidence - consider retesting'}
-          </p>
-        </div>
       </div>
     </div>
   );
