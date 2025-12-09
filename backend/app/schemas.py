@@ -2,10 +2,22 @@
 from pydantic import BaseModel, Field
 from typing import Dict, Optional
 
+class PreprocessingSteps(BaseModel):
+    """Preprocessing step images in base64 format."""
+    original: str = Field(..., description="Original uploaded image (base64)")
+    denoised: str = Field(..., description="Image after denoising (base64)")
+    contrast_enhanced: str = Field(..., description="Image after CLAHE contrast enhancement (base64)")
+    sharpened: str = Field(..., description="Image after sharpening (base64)")
+    edge_enhanced: str = Field(..., description="Image after edge enhancement (base64)")
+    normalized: str = Field(..., description="Image after intensity normalization (base64)")
+    segmented: str = Field(..., description="Brain segmented image (base64)")
+    final: str = Field(..., description="Final preprocessed image for model (base64)")
+
 class PredictionResponse(BaseModel):
     """Response model for prediction endpoint."""
     class_name: str = Field(..., alias="class", description="Predicted class: tumor or no_tumor")
     confidence: float = Field(..., ge=0.0, le=1.0, description="Confidence score between 0 and 1")
+    preprocessing_steps: Optional[PreprocessingSteps] = Field(None, description="Intermediate preprocessing images")
     
     class Config:
         populate_by_name = True
