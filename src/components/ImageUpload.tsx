@@ -9,9 +9,10 @@ import './ImageUpload.css';
 interface ImageUploadProps {
   onUpload: (file: File) => void;
   isLoading: boolean;
+  onReset?: () => void;
 }
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ onUpload, isLoading }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ onUpload, isLoading, onReset }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -80,6 +81,10 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onUpload, isLoading }) => {
     setSelectedFile(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+    // Notify parent component to clear results
+    if (onReset) {
+      onReset();
     }
   };
 

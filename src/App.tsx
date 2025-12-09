@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import ImageUpload from './components/ImageUpload';
 import ResultPanel from './components/ResultPanel';
 import ProgressBar from './components/ProgressBar';
+import PreprocessingSteps from './components/PreprocessingSteps';
 import { predictImage, checkHealth } from './api/client';
 import type { PredictionResponse } from './api/client';
 import styles from './styles/app.module.css';
@@ -50,6 +51,11 @@ function App() {
     }
   };
 
+  const handleReset = () => {
+    setResult(null);
+    setError(null);
+  };
+
   return (
     <div className={styles.app}>
       <div className={styles.container}>
@@ -78,7 +84,7 @@ function App() {
           {/* Upload Section */}
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>Upload MRI Image</h2>
-            <ImageUpload onUpload={handleUpload} isLoading={isLoading} />
+            <ImageUpload onUpload={handleUpload} isLoading={isLoading} onReset={handleReset} />
           </section>
 
           {/* Results Section */}
@@ -97,10 +103,16 @@ function App() {
             )}
 
             {result && !isLoading && (
-              <ResultPanel
-                className={result.class}
-                confidence={result.confidence}
-              />
+              <>
+                <ResultPanel
+                  className={result.class}
+                  confidence={result.confidence}
+                />
+                
+                {result.preprocessing_steps && (
+                  <PreprocessingSteps steps={result.preprocessing_steps} />
+                )}
+              </>
             )}
 
             {!isLoading && !error && !result && (

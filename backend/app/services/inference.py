@@ -4,8 +4,10 @@ import torch.nn.functional as F
 from PIL import Image
 import numpy as np
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Tuple, Union, Optional, Dict
 import io
+import base64
+import cv2
 
 from app.logging_config import logger
 from app.config import DEVICE, CLASS_NAMES
@@ -14,10 +16,38 @@ from app.services.segmentation import segment_brain
 from app.services.dataset import get_test_transforms
 
 
+def numpy_to_base64(image: np.ndarray) -> str:
+    """
+    Convert numpy array image to base64 string.
+    
+    Args:
+        image: Numpy array (grayscale uint8)
+        
+    Returns:
+        Base64 encoded string with data URI prefix
+    """
+    # Ensure image is uint8
+    if image.dtype != np.uint8:
+        image = image.astype(np.uint8)
+    
+    # Convert to PIL Image
+    pil_image = Image.fromarray(image)
+    
+    # Convert to base64
+    buffer = io.BytesIO()
+    pil_image.save(buffer, format='PNG')
+    buffer.seek(0)
+    
+    # Encode to base64
+    base64_str = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    return f"data:image/png;base64,{base64_str}"
+
+
 def predict_image(
     model: torch.nn.Module,
-    image_input: Union[str, Path, Image.Image, bytes]
-) -> Tuple[str, float]:
+    image_input: Union[str, Path, Image.Image, bytes],
+    return_preprocessing_steps: bool = False
+) -> Union[Tuple[str, float], Tuple[str, float, Optional[Dict[str, str]]]]:
     """
     Predict class and confidence for a single image.
     
@@ -32,9 +62,10 @@ def predict_image(
     Args:
         model: Trained model
         image_input: Image file path, PIL Image, or bytes
+        return_preprocessing_steps: If True, return intermediate preprocessing images as base64
         
     Returns:
-        Tuple of (class_name, confidence)
+        Tuple of (class_name, confidence) or (class_name, confidence, preprocessing_steps_dict)
     """
     logger.info("Starting prediction pipeline...")
     
@@ -60,6 +91,9 @@ def predict_image(
     # Convert PIL to numpy for preprocessing
     image_np = np.array(image.convert('L'))
     
+    # Store original for visualization
+    original_image = image_np.copy()
+    
     # Preprocess
     from app.services.preprocessing import (
         denoise_image, apply_clahe, sharpen_image,
@@ -84,6 +118,10 @@ def predict_image(
     image_tensor = transform(segmented_rgb).unsqueeze(0)  # Add batch dimension
     image_tensor = image_tensor.to(DEVICE)
     
+    # Create final image for visualization (resize to model input size)
+    from app.config import IMAGE_SIZE
+    final_image = cv2.resize(segmented, (IMAGE_SIZE, IMAGE_SIZE), interpolation=cv2.INTER_LINEAR)
+    
     # Step 5: Run inference
     logger.info("Running model inference...")
     model.eval()
@@ -100,6 +138,21 @@ def predict_image(
     class_name = CLASS_NAMES[predicted_class]
     
     logger.info(f"Prediction completed: class={class_name}, confidence={confidence:.4f}")
+    
+    # If preprocessing steps are requested, return them as base64
+    if return_preprocessing_steps:
+        logger.info("Generating preprocessing step images...")
+        preprocessing_steps = {
+            "original": numpy_to_base64(original_image),
+            "denoised": numpy_to_base64(denoised),
+            "contrast_enhanced": numpy_to_base64(enhanced),
+            "sharpened": numpy_to_base64(sharpened),
+            "edge_enhanced": numpy_to_base64(edge_enhanced),
+            "normalized": numpy_to_base64(preprocessed),
+            "segmented": numpy_to_base64(segmented),
+            "final": numpy_to_base64(final_image)
+        }
+        return class_name, confidence, preprocessing_steps
     
     return class_name, confidence
 

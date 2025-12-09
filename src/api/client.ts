@@ -4,9 +4,21 @@
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
+export interface PreprocessingSteps {
+  original: string;
+  denoised: string;
+  contrast_enhanced: string;
+  sharpened: string;
+  edge_enhanced: string;
+  normalized: string;
+  segmented: string;
+  final: string;
+}
+
 export interface PredictionResponse {
   class: string;
   confidence: number;
+  preprocessing_steps?: PreprocessingSteps;
 }
 
 export interface HealthResponse {

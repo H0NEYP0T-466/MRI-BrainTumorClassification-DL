@@ -1,6 +1,6 @@
 """Prediction endpoint."""
 from fastapi import APIRouter, UploadFile, File, HTTPException
-from app.schemas import PredictionResponse
+from app.schemas import PredictionResponse, PreprocessingSteps
 from app.logging_config import logger
 from app.services.inference import predict_image
 
@@ -41,15 +41,20 @@ async def predict(file: UploadFile = File(...)):
         logger.info("Reading uploaded file...")
         contents = await file.read()
         
-        # Run prediction
+        # Run prediction with preprocessing steps
         logger.info("Starting prediction pipeline...")
-        class_name, confidence = predict_image(current_model["model"], contents)
+        class_name, confidence, preprocessing_steps = predict_image(
+            current_model["model"], 
+            contents, 
+            return_preprocessing_steps=True
+        )
         
         logger.info(f"Prediction completed: class={class_name}, confidence={confidence:.4f}")
         
         return PredictionResponse(
             class_name=class_name,
-            confidence=confidence
+            confidence=confidence,
+            preprocessing_steps=preprocessing_steps
         )
         
     except Exception as e:
