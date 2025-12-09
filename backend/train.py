@@ -353,12 +353,12 @@ def train_model(epochs: int, batch_size: int, learning_rate: float):
     )
     
     print("📉 Learning rate scheduler: ReduceLROnPlateau")
+    # Remove verbose=True for compatibility; we will manually print progress
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(
         optimizer,
         mode='min',
         factor=0.5,
-        patience=2,
-        verbose=True
+        patience=2
     )
     
     # Step 6: Training loop
@@ -395,24 +395,24 @@ def train_model(epochs: int, batch_size: int, learning_rate: float):
         print(f"  Validation - Loss: {val_loss:.4f}, Accuracy: {val_acc:.2f}%")
         print(f"  Time: {epoch_time:.1f}s")
         
-        # Update learning rate
+        # Manual LR progress printing around scheduler step
         old_lr = optimizer.param_groups[0]['lr']
         scheduler.step(val_loss)
         new_lr = optimizer.param_groups[0]['lr']
         
         if new_lr != old_lr:
-            print(f"  📉 Learning rate reduced: {old_lr:.6f} → {new_lr:.6f}")
+            print(f"  📉 LR update: {old_lr:.6f} → {new_lr:.6f} (ReduceLROnPlateau)")
         else:
-            print(f"  Learning rate: {new_lr:.6f}")
+            print(f"  LR unchanged: {new_lr:.6f}")
         
         # Save best model
         if val_acc > best_val_acc:
             best_val_acc = val_acc
             best_epoch = epoch
             save_model(model)
-            print(f"  💾 New best model saved! Validation accuracy: {best_val_acc:.2f}%")
+            print(f"  💾 New best model saved! Validation accuracy: {best_val_acc:.2f}% (Epoch {best_epoch})")
         else:
-            print(f"  Best validation accuracy: {best_val_acc:.2f}% (Epoch {best_epoch})")
+            print(f"  Best so far: {best_val_acc:.2f}% (Epoch {best_epoch})")
         
         # Store history
         training_history.append({
