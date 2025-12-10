@@ -76,11 +76,23 @@ When using this project, please follow these security best practices:
 
 ### Medical Data
 
-- **This is a research/educational project and NOT approved for clinical use**
-- Do not process real patient data without proper authorization
-- Comply with HIPAA, GDPR, and other relevant regulations
+> ⚠️ **CRITICAL: NOT FOR CLINICAL USE**
+> 
+> This system is a research/educational project and is **NOT approved for clinical diagnosis or medical use**. It has not received FDA approval or clearance under 21 CFR Part 807 (Premarket Notification) or 21 CFR Part 814 (Premarket Approval).
+> 
+> **For Clinical Use:**
+> - FDA 510(k) clearance or PMA approval is required
+> - Clinical validation studies must be conducted
+> - Compliance with ISO 13485 (Medical Device Quality Management) is necessary
+> - CE marking required for European markets
+> - Local regulatory approvals may be required in other jurisdictions
+
+**Data Handling Requirements:**
+- Do not process real patient data without proper authorization and ethical approval
+- Comply with HIPAA (US), GDPR (EU), and other relevant data protection regulations
 - Implement data encryption at rest and in transit
 - Ensure proper access controls for sensitive data
+- Maintain audit trails for all data access and processing
 
 ### Model Security
 

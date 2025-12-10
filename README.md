@@ -157,14 +157,16 @@ MRI-BrainTumorClassification-DL/
 
 ## 📦 Dependencies & Packages
 
+> **Note:** The version badges below show the latest available versions on npm/PyPI. The actual versions used in this project are specified in `package.json` and `requirements.txt`.
+
 ### Runtime Dependencies (Frontend)
 
 <details open>
 <summary><strong>Click to expand</strong></summary>
 
-[![react](https://img.shields.io/npm/v/react?style=for-the-badge&label=react&color=61DAFB)](https://www.npmjs.com/package/react) - A JavaScript library for building user interfaces
+[![react](https://img.shields.io/npm/v/react?style=for-the-badge&label=react&color=61DAFB)](https://www.npmjs.com/package/react) - A JavaScript library for building user interfaces (v19.2.0 in project)
 
-[![react-dom](https://img.shields.io/npm/v/react-dom?style=for-the-badge&label=react-dom&color=61DAFB)](https://www.npmjs.com/package/react-dom) - Entry point for React DOM
+[![react-dom](https://img.shields.io/npm/v/react-dom?style=for-the-badge&label=react-dom&color=61DAFB)](https://www.npmjs.com/package/react-dom) - Entry point for React DOM (v19.2.0 in project)
 
 </details>
 

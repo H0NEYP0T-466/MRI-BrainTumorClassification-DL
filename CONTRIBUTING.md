@@ -162,7 +162,11 @@ Closes #123
 
 Format your code using:
 ```bash
-black app/
+# From backend directory
+cd backend && black app/
+
+# Or from root directory
+black backend/app/
 ```
 
 ### TypeScript/JavaScript (Frontend)
