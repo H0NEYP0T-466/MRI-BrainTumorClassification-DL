@@ -1,0 +1,121 @@
+name: 🐛 Bug Report
+description: Report a reproducible problem
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for taking the time to report a bug! Please fill out the form below with as much detail as possible.
+
+  - type: textarea
+    id: summary
+    attributes:
+      label: Bug Summary
+      description: A clear and concise description of what the bug is.
+      placeholder: Tell us what went wrong
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: Detailed steps to reproduce the behavior
+      placeholder: |
+        1. Go to '...'
+        2. Click on '...'
+        3. Scroll down to '...'
+        4. See error
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Expected Behavior
+      description: A clear description of what you expected to happen
+      placeholder: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual-behavior
+    attributes:
+      label: Actual Behavior
+      description: A clear description of what actually happened
+      placeholder: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Information about your environment
+      placeholder: |
+        - OS: [e.g., Ubuntu 22.04, Windows 11, macOS 13]
+        - Browser: [e.g., Chrome 120, Firefox 121]
+        - Node.js Version: [e.g., 18.17.0]
+        - Python Version: [e.g., 3.10.0]
+        - CUDA Version: [e.g., 11.8, or N/A]
+      value: |
+        - OS: 
+        - Browser: 
+        - Node.js Version: 
+        - Python Version: 
+        - CUDA Version: 
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs
+      description: Please paste any relevant log output. This will be automatically formatted.
+      render: shell
+      placeholder: Paste logs here
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: If applicable, add screenshots to help explain your problem
+      placeholder: Drag and drop images here or paste image URLs
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is this bug?
+      options:
+        - Critical - System crashes or data loss
+        - High - Major feature broken
+        - Medium - Minor feature broken
+        - Low - Cosmetic issue
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context about the problem here
+      placeholder: Any additional information that might help us understand the issue
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      description: Please confirm the following
+      options:
+        - label: I have searched existing issues to ensure this bug hasn't been reported before
+          required: true
+        - label: I have provided all the requested information above
+          required: true
+        - label: I am willing to submit a PR to fix this bug (optional)
+          required: false
