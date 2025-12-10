@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 GitHub Discussions
+    url: https://github.com/H0NEYP0T-466/MRI-BrainTumorClassification-DL/discussions
+    about: Ask questions and discuss ideas with the community
+  - name: 🛡️ Security Vulnerability
+    url: https://github.com/H0NEYP0T-466/MRI-BrainTumorClassification-DL/security
+    about: Report security vulnerabilities responsibly (DO NOT use public issues)
+  - name: 📖 Documentation
+    url: https://github.com/H0NEYP0T-466/MRI-BrainTumorClassification-DL#readme
+    about: Read the project documentation and guides
