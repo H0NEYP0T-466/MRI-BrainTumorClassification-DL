@@ -4,9 +4,22 @@ import torch.nn as nn
 import timm
 from pathlib import Path
 from typing import Optional
+from huggingface_hub.errors import HfHubHTTPError, LocalEntryNotFoundError
 
 from app.logging_config import logger
 from app.config import MODEL_NAME, NUM_CLASSES, DEVICE, MODEL_PATH
+
+
+# Network error indicators for detecting download failures
+NETWORK_ERROR_KEYWORDS = {
+    "cannot send a request",  # httpx client closed
+    "client has been closed",  # httpx client state
+    "no address associated with hostname",  # DNS resolution failure
+    "connection refused",  # Network connection failure
+    "connection reset",  # Network connection reset
+    "network is unreachable",  # Network routing issue
+    "failed to resolve",  # DNS resolution failure
+}
 
 
 class BrainTumorClassifier(nn.Module):
@@ -23,15 +36,71 @@ class BrainTumorClassifier(nn.Module):
         logger.info(f"Initializing model: {model_name}")
         logger.info(f"Number of classes: {num_classes}")
         
-        # Load pretrained ViT from timm
-        self.model = timm.create_model(
-            model_name,
-            pretrained=True,
-            num_classes=num_classes
-        )
+        # Try to load pretrained ViT from timm with fallback
+        self.model = self._initialize_model(model_name, num_classes)
         
         logger.info("Model initialized successfully")
         logger.info(f"Model parameters: {sum(p.numel() for p in self.parameters()):,}")
+    
+    def _initialize_model(self, model_name: str, num_classes: int):
+        """
+        Initialize the model, trying pretrained first, then falling back to random initialization.
+        
+        Args:
+            model_name: Name of the model architecture
+            num_classes: Number of output classes
+            
+        Returns:
+            Initialized model
+        """
+        try:
+            logger.info("Attempting to load pretrained weights from HuggingFace Hub...")
+            model = timm.create_model(
+                model_name,
+                pretrained=True,
+                num_classes=num_classes
+            )
+            logger.info("✓ Pretrained weights loaded successfully")
+            return model
+        except (HfHubHTTPError, LocalEntryNotFoundError) as e:
+            # HfHubHTTPError: HTTP errors from HuggingFace Hub (403, 404, 5xx, etc.)
+            # LocalEntryNotFoundError: Model not found in local cache and cannot be downloaded
+            logger.warning(f"Failed to download pretrained weights: {e}")
+            return self._create_model_without_pretrained(model_name, num_classes)
+        except (OSError, RuntimeError) as e:
+            # OSError: Network/file system errors during download
+            # RuntimeError: HTTP client errors (e.g., "Cannot send a request, as the client has been closed")
+            # Check if this is a network-related error that should trigger fallback
+            error_msg = str(e).lower()
+            is_network_error = any(keyword in error_msg for keyword in NETWORK_ERROR_KEYWORDS)
+            
+            if is_network_error:
+                logger.warning(f"Network error while downloading pretrained weights: {e}")
+                return self._create_model_without_pretrained(model_name, num_classes)
+            else:
+                # Re-raise if it's not a network-related error
+                raise
+    
+    def _create_model_without_pretrained(self, model_name: str, num_classes: int):
+        """
+        Create model with random initialization (no pretrained weights).
+        
+        Args:
+            model_name: Name of the model architecture
+            num_classes: Number of output classes
+            
+        Returns:
+            Model with random weights
+        """
+        logger.warning("Falling back to random initialization (no pretrained weights)")
+        logger.info("Note: Training from scratch may require more epochs for convergence")
+        model = timm.create_model(
+            model_name,
+            pretrained=False,
+            num_classes=num_classes
+        )
+        logger.info("✓ Model initialized with random weights")
+        return model
     
     def forward(self, x):
         return self.model(x)
